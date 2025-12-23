@@ -1,5 +1,6 @@
 "use server"
-import db from "@/lib/db";
+import { prisma } from "@/lib/db"
+
 import { currentUser } from "@clerk/nextjs/server";
 export const onBoardUser = async () => {
     try {
@@ -11,7 +12,7 @@ export const onBoardUser = async () => {
             }
         }
         const {id, firstName, lastName,emailAddresses,imageUrl} =user;
-        const newUser = await db.user.upsert({
+        const newUser = await prisma.user.upsert({
             where:{
                 clerkId: id
             },
@@ -46,7 +47,7 @@ export const getCurrentUser = async () => {
         if(!user){
             return null;
         }
-        const dbUser = await db.user.findUnique({
+        const dbUser = await prisma.user.findUnique({
             where:{
                 clerkId: user.id
             },
