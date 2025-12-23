@@ -1,0 +1,30 @@
+<svg 
+  viewBox="0 0 150 28" 
+  xmlns="http://www.w3.org/2000/svg" 
+  aria-label="UICraft logo"
+>
+  <style>
+    /* Default: Light Mode Colors (Dark Text) */
+    .brand-fill { fill: #0f172a; }
+    .inner-stroke { stroke: #ffffff; }
+    .text-fill { fill: #0f172a; }
+
+    /* System Dark Mode: Light Text */
+    @media (prefers-color-scheme: dark) {
+      .brand-fill { fill: #ffffff; }
+      .inner-stroke { stroke: #0f172a; }
+      .text-fill { fill: #ffffff; }
+    }
+  </style>
+
+  <rect class="brand-fill" x="0" y="0" width="22" height="22" rx="6" fill-opacity="0.2" />
+  
+  <rect class="brand-fill" x="5" y="5" width="22" height="22" rx="6" />
+  
+  <path 
+    class="inner-stroke"
+    d="M12 13H20M12 17H16" 
+    stroke-width="2.5" 
+    stroke-linecap="round" 
+  />
+</svg>
