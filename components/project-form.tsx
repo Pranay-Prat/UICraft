@@ -73,7 +73,7 @@ export default function HeroSection() {
       <div className="relative z-10 flex flex-col items-center text-center mb-12">
         <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground mb-4 max-w-2xl">
           Build your next interface{" "}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-600">
+          <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-blue-600">
             faster than ever
           </span>
         </h1>
@@ -107,6 +107,7 @@ function ProjectForm() {
       console.log(data);
     } catch (error) {
       toast.error("Generation failed.");
+      console.log(error)
     }
   };
 
@@ -158,7 +159,7 @@ function ProjectForm() {
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className={cn(
-              "relative border p-4 rounded-[2rem] bg-sidebar/20 backdrop-blur-xl transition-all shadow-sm",
+              "relative border p-4 rounded-4xl bg-sidebar/20 backdrop-blur-xl transition-all shadow-sm",
               isFocused &&
                 "ring-1 ring-primary/20 border-primary/30 bg-sidebar/40 shadow-lg shadow-primary/5"
             )}
