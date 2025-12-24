@@ -1,0 +1,17 @@
+# This is a config for E2B sandbox template.
+# You can use template ID (dfkdjnozbny02kbb3hzu) or template name (uicraft-build) to create a sandbox:
+
+# Python SDK
+# from e2b import Sandbox, AsyncSandbox
+# sandbox = Sandbox.create("uicraft-build") # Sync sandbox
+# sandbox = await AsyncSandbox.create("uicraft-build") # Async sandbox
+
+# JS SDK
+# import { Sandbox } from 'e2b'
+# const sandbox = await Sandbox.create('uicraft-build')
+
+team_id = "4ae6b200-2fc4-4b48-a494-f0dc200bb1ca"
+start_cmd = "/compile_page.sh"
+dockerfile = "e2b.Dockerfile"
+template_name = "uicraft-build"
+template_id = "dfkdjnozbny02kbb3hzu"

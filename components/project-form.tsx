@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { Form, FormField } from "./ui/form";
 import { FormSchema, formSchema } from "@/schemas/formSchema";
+import { onInvoke } from "@/modules/inngest/actions";
 
 const PROJECT_TEMPLATES = [
   {
@@ -63,6 +64,7 @@ const PROJECT_TEMPLATES = [
 ];
 
 export default function HeroSection() {
+
   return (
     // Changed: Removed fixed heights, added min-h-screen to ensure background coverage
     <section className="relative w-full min-h-screen py-10 md:py-20 px-6 overflow-x-hidden bg-background">
@@ -110,11 +112,21 @@ function ProjectForm() {
       console.log(error)
     }
   };
-
+  const onInvokeAI = async () => {
+    try {
+      const res = await onInvoke();
+      console.log(res);
+      toast.success("Invocation sent!");
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return (
     // Changed: Removed h-full and max-h. Using normal flex column gap.
     <div className="flex flex-col w-full gap-8">
-      
+        <Button onClick={onInvokeAI}>
+        Invoke AI Agent
+      </Button>
       {/* Template Grid: Removed flex-1 and overflow-y-auto so it stays full size */}
       <div className="w-full">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
