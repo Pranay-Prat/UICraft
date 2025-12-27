@@ -10,7 +10,9 @@ import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { Form, FormField } from "./ui/form";
 import { FormSchema, formSchema } from "@/schemas/formSchema";
-import { onInvoke } from "@/modules/inngest/actions";
+import { useCreateProject } from "@/modules/project/actions/hooks/project";
+import { useRouter } from "next/navigation";
+import { Spinner } from "./ui/spinner";
 
 const PROJECT_TEMPLATES = [
   {
@@ -64,11 +66,11 @@ const PROJECT_TEMPLATES = [
 ];
 
 export default function HeroSection() {
-
   return (
-    // Changed: Removed fixed heights, added min-h-screen to ensure background coverage
     <section className="relative w-full min-h-screen py-10 md:py-20 px-6 overflow-x-hidden bg-background">
+      {/* Background Glow Effects */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-full opacity-20 pointer-events-none">
+        {/* Fixed: w-125 is not standard, used w-[500px] instead */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-125 h-125 bg-primary/20 rounded-full blur-[100px]" />
       </div>
 
@@ -95,39 +97,39 @@ export default function HeroSection() {
 
 function ProjectForm() {
   const [isFocused, setIsFocused] = React.useState(false);
+  const router = useRouter();
+  const { mutateAsync, isPending } = useCreateProject();
+  
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: { content: "" },
+    mode: "onChange",
   });
 
   const handleTemplate = (prompt: string) => {
-    form.setValue("content", prompt);
+    form.setValue("content", prompt, { shouldValidate: true });
+    // Improvement: Focus the input immediately after clicking a template
+    form.setFocus("content");
   };
 
   const onSubmit = async (data: FormSchema) => {
     try {
-      console.log(data);
+      const res = await mutateAsync(data.content);
+      router.push(`/project/${res.id}`);
+      toast.success("Project created!");
+      form.reset();
     } catch (error) {
-      toast.error("Generation failed.");
-      console.log(error)
+      toast.error("Generation failed. Please try again.");
+      console.error("Project generation error:", error);
     }
   };
-  const onInvokeAI = async () => {
-    try {
-      const res = await onInvoke();
-      console.log(res);
-      toast.success("Invocation sent!");
-    } catch (error) {
-      console.log(error);
-    }
-  }
+
+  const contentValue = form.watch("content");
+  const isButtonDisabled = isPending || !contentValue?.trim();
+
   return (
-    // Changed: Removed h-full and max-h. Using normal flex column gap.
     <div className="flex flex-col w-full gap-8">
-        <Button onClick={onInvokeAI}>
-        Invoke AI Agent
-      </Button>
-      {/* Template Grid: Removed flex-1 and overflow-y-auto so it stays full size */}
+      {/* Template Grid */}
       <div className="w-full">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {PROJECT_TEMPLATES.map((template) => (
@@ -154,7 +156,7 @@ function ProjectForm() {
         </div>
       </div>
 
-      {/* Form Section: This will now push the bottom of the page down */}
+      {/* Input Form */}
       <div className="space-y-6">
         <div className="relative py-2">
           <div className="absolute inset-0 flex items-center">
@@ -184,10 +186,12 @@ function ProjectForm() {
                   {...field}
                   placeholder="Tell us what you want to build..."
                   onFocus={() => setIsFocused(true)}
-                  onBlur={() => setIsFocused(false)}
+                  onBlur={() => {
+                    setIsFocused(false);
+                    field.onBlur(); // Forward the onBlur to react-hook-form
+                  }}
                   minRows={1}
-                  // Removed maxRows or set it very high to allow downward expansion
-                  className="resize-none border-none w-full outline-none bg-transparent text-base placeholder:text-muted-foreground/20 leading-relaxed px-2"
+                  className="resize-none border-none w-full outline-none bg-transparent text-base placeholder:text-muted-foreground/20 leading-relaxed px-2 scrollbar-hide"
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
                       e.preventDefault();
@@ -207,10 +211,20 @@ function ProjectForm() {
                 </span>
               </div>
               <Button
-                className="h-10 w-10 rounded-xl p-0 shrink-0 shadow-lg shadow-primary/10 transition-all active:scale-90"
+                className={cn(
+                  "size-8 rounded-full p-0 shrink-0 shadow-lg shadow-primary/10 transition-all",
+                  isButtonDisabled 
+                    ? "bg-muted text-muted-foreground border border-border/50 cursor-not-allowed" 
+                    : "bg-primary hover:bg-primary/90 text-primary-foreground active:scale-90"
+                )}
                 type="submit"
+                disabled={isButtonDisabled}
               >
-                <ArrowUpIcon className="h-5 w-5 stroke-[2.5]" />
+                {isPending ? (
+                  <Spinner className="size-4" />
+                ) : (
+                  <ArrowUpIcon className="h-5 w-5 stroke-[2.5]" />
+                )}
               </Button>
             </div>
           </form>

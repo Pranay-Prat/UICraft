@@ -1,26 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export function lastAssistantTextMessageContent(result: any) {
   const output = result?.output;
+  if (!Array.isArray(output)) return null;
 
-  if (!Array.isArray(output)) return undefined;
+  for (let i = output.length - 1; i >= 0; i--) {
+    const message = output[i];
+    if (message?.role !== "assistant") continue;
+    if (!message?.content) continue;
 
-  const idx = output.findLastIndex(
-    (message) => message?.role === "assistant"
-  );
+    if (typeof message.content === "string") {
+      return message.content;
+    }
 
-  if (idx === -1) return undefined;
-
-  const message = output[idx];
-
-  if (!message?.content) return undefined;
-
-  if (typeof message.content === "string") {
-    return message.content;
+    if (Array.isArray(message.content)) {
+      return message.content
+        .map((c: any) => c?.text)
+        .filter(Boolean)
+        .join("");
+    }
   }
 
-  if (Array.isArray(message.content)) {
-    return message.content.map((c: any) => c?.text ?? "").join("");
-  }
-
-  return undefined;
+  return null;
 }

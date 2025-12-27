@@ -1,20 +1,26 @@
-import { auth, clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+
 const isPublicRoute = createRouteMatcher([
     "/",
     "/sign-in(.*)",
     "/sign-up(.*)",
-    "/api/(.*)",
-])
-export default clerkMiddleware(async (auth,req)=>{
-    if(!isPublicRoute(req)){
-        await auth.protect()
-}});
+    "/api/inngest", // Add this just to be safe in the clerk logic too
+]);
+
+export default clerkMiddleware(async (auth, req) => {
+    if (!isPublicRoute(req)) {
+        await auth.protect();
+    }
+});
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    // Always run for API routes
-    '/(api|trpc)(.*)',
+    /*
+     * Match all request paths EXCEPT for the ones starting with:
+     * - api/inngest (The critical exclusion)
+     * - _next (Next.js internals)
+     * - Any file with an extension (static files like .css, .png, etc.)
+     */
+    '/((?!api/inngest|_next|.*\\..*).*)',
   ],
 };
