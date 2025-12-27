@@ -4,7 +4,7 @@ import {
   createAgent,
   createTool,
   createNetwork,
-  createState, // <--- 1. IMPORT THIS
+  createState,
 } from "@inngest/agent-kit";
 import Sandbox from "@e2b/code-interpreter";
 import { z } from "zod";
@@ -17,17 +17,14 @@ const codeAgentFunction = inngest.createFunction(
   { id: "code-agent", retries: 1 },
   { event: "code-agent/run" },
   async ({ event, step }) => {
-    
     const sandboxId = await step.run("get-sandbox-id", async () => {
       const sandbox = await Sandbox.create("uicraft-build");
       return sandbox.sandboxId;
     });
 
-    // 2. INITIALIZE STATE (Critical Fix)
-    // This creates the "memory" bucket for files and summary
     const state = createState({
       summary: "",
-      files: {} 
+      files: {},
     });
 
     const codeAgent = createAgent({
@@ -64,23 +61,18 @@ const codeAgentFunction = inngest.createFunction(
               z.object({ path: z.string(), content: z.string() })
             ),
           }),
-          // 3. UPDATE STATE IN TOOL HANDLER
-          // We add { network } here to access state
           handler: async ({ files }, { step, network }) => {
             const newFiles = await step?.run("createOrUpdateFiles", async () => {
-              // Get existing files from state or start empty
               const updatedFiles = network?.state?.data.files || {};
               const sandbox = await Sandbox.connect(sandboxId);
               
               for (const file of files) {
                 await sandbox.files.write(file.path, file.content);
-                // Update local object so we don't lose previous files
                 updatedFiles[file.path] = file.content;
               }
               return updatedFiles;
             });
 
-            // CRITICAL: Save back to network state so it persists
             if (network && typeof newFiles === "object") {
               network.state.data.files = newFiles;
             }
@@ -104,12 +96,10 @@ const codeAgentFunction = inngest.createFunction(
           },
         }),
       ],
-      // 4. LIFECYCLE HOOK TO CAPTURE SUMMARY
       lifecycle: {
         onResponse: async ({ result, network }) => {
           const text = lastAssistantTextMessageContent(result);
           if (text && network) {
-            // This is how the agent signals it is done
             if (text.includes("<task_summary>")) {
               network.state.data.summary = text;
             }
@@ -124,7 +114,6 @@ const codeAgentFunction = inngest.createFunction(
       agents: [codeAgent],
       maxIter: 10,
       router: async ({ network }) => {
-        // Stop the loop if we have found the summary
         if (network.state.data.summary) {
           return undefined; 
         }
@@ -134,11 +123,8 @@ const codeAgentFunction = inngest.createFunction(
 
     let result;
     try {
-      // 5. PASS STATE TO RUN
       result = await network.run(event.data.value, { state });
     } catch (err: unknown) {
-        // ... (Keep your existing error handling for Quota/etc)
-        // For brevity, I'm keeping this block collapsed as it was correct in your code
         const errObj = typeof err === "object" && err !== null ? (err as Record<string, unknown>) : null;
         if (errObj?.["status"] === "RESOURCE_EXHAUSTED" || String(err).includes("Quota")) {
             return { url: null, title: "Quota Exceeded", files: null, summary: "Quota exhausted." };
@@ -148,8 +134,6 @@ const codeAgentFunction = inngest.createFunction(
 
     const summary = result.state.data.summary;
     const files = result.state.data.files;
-    
-    // Check for error based on missing data
     const isError = !summary || Object.keys(files || {}).length === 0;
 
     const sandboxUrl = await step.run("get-sandbox-url", async () => {
@@ -179,7 +163,7 @@ const codeAgentFunction = inngest.createFunction(
           fragments: {
             create: {
               sandboxUrl,
-              title: "Untitled Project", 
+              title: "Untitled Project",
               files: files,
             },
           },

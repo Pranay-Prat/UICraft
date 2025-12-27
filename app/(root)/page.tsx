@@ -1,4 +1,5 @@
 import HeroSection from "@/components/project-form";
+import ProjectList from "@/components/projectlist";
 
 export default function Home() {
   return (
@@ -9,6 +10,7 @@ export default function Home() {
           <div className="max-w-3xl w-full">
             <HeroSection />
           </div>
+          <ProjectList/>
         </section>
       </div>
     </div>
