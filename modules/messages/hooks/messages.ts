@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { createMessages, getMessages } from "../actions";
 
-export const prefetchMessage = async (
+export const prefetchMessages = async (
   queryClient: QueryClient,
   projectId: string
 ): Promise<void> => {
