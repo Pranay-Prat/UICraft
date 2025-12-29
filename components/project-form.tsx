@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { Form, FormField } from "./ui/form";
 import { FormSchema, formSchema } from "@/schemas/formSchema";
-import { useCreateProject } from "@/modules/project/actions/hooks/project";
+import { useCreateProject } from "@/modules/project/hooks/project";
 import { useRouter } from "next/navigation";
 import { Spinner } from "./ui/spinner";
 

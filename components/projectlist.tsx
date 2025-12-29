@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useGetProjects } from "@/modules/project/actions/hooks/project";
+import { useGetProjects } from "@/modules/project/hooks/project";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "./ui/skeleton";
 import {

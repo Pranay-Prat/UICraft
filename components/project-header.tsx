@@ -22,7 +22,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useGetProjectById } from "@/modules/project/actions/hooks/project";
+import { useGetProjectById } from "@/modules/project/hooks/project";
 import { Spinner } from "@/components/ui/spinner";
 
 const ProjectHeader = ({ projectId }: { projectId: string }) => {
