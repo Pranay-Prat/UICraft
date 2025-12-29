@@ -44,7 +44,7 @@ const MessageContainer = ({projectId,activeFragment,setActiveFragment}:{
         )
     }
     return (
-    <div clas>
+    <div className=''>
         
     </div>
   )
