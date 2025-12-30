@@ -3,9 +3,14 @@ import { useGetMessages,prefetchMessages } from '@/modules/messages/hooks/messag
 import { MessageRole } from '@prisma/client'
 import { useQueryClient } from '@tanstack/react-query'
 import { Spinner } from './ui/spinner'
-const MessageContainer = ({projectId,activeFragment,setActiveFragment}:{
-    projectId:string, activeFragment:unknown, setActiveFragment:unknown
-}) => {
+import MessageCard from './message-card'
+import { Fragment } from '@/schemas/messagesSchema'
+interface MessageContainerProps {
+    projectId: string;
+    activeFragment: Fragment | null; 
+    setActiveFragment: (fragment: Fragment | null) => void;
+}
+const MessageContainer = ({ projectId, activeFragment, setActiveFragment }: MessageContainerProps) => {
     const queryClient = useQueryClient();
     const bottomRef = useRef(null)
     const lastAssistantMessageIdRef = useRef(null)
@@ -43,9 +48,27 @@ const MessageContainer = ({projectId,activeFragment,setActiveFragment}:{
             </div>
         )
     }
+    const lastMessage = messages[messages.length - 1];
+        const isLastMessageUser = lastMessage.role === MessageRole.USER
+
     return (
-    <div className=''>
-        
+    <div className='flex flex-col flex-1 min-h-0'>
+        <div className='flex-1 min-h-0 overflow-y-auto'>
+            {
+  messages.map((message) => ( 
+    <MessageCard
+      key={message.id}
+      content={message.content}
+      role={message.role}
+      fragment={message.fragments}
+      createdAt={message.createdAt}
+      isActiveFragment={activeFragment?.id === message.fragments?.id}
+      onFragmentClick={() => setActiveFragment(message.fragments)}
+      type={message.type}
+    />
+  )) 
+}
+        </div>
     </div>
   )
 }

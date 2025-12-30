@@ -12,8 +12,9 @@ import Link from "next/link";
 import { useAuth } from "@clerk/nextjs";
 import ProjectHeader from "./project-header";
 import MessageContainer from "./message-container";
+import { Fragment } from "@/schemas/messagesSchema";
 const ProjectView = ({ projectId }: { projectId: string }) => {
-  const [activeFragment,setActiveFragment] = useState(null)
+  const [activeFragment,setActiveFragment] = useState<Fragment | null>(null)
   return (
     <div className="h-screen">
       <ResizablePanelGroup direction="horizontal">
