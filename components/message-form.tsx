@@ -11,42 +11,10 @@ import { Button } from "./ui/button";
 import { Form, FormField } from "./ui/form";
 import { messageFormSchema,messageformSchema } from "@/schemas/messageFormSchema";
 import { useCreateMessages } from "@/modules/messages/hooks/messages";
-import { useRouter } from "next/navigation";
 import { Spinner } from "./ui/spinner";
 
 
-
-export default function HeroSection({projectId}: {projectId: string}) {
-  return (
-    <section className="relative w-full min-h-screen py-10 md:py-20 px-6 overflow-x-hidden bg-background">
-      {/* Background Glow Effects */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-full opacity-20 pointer-events-none">
-        {/* Fixed: w-125 is not standard, used w-[500px] instead */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-125 h-125 bg-primary/20 rounded-full blur-[100px]" />
-      </div>
-
-      <div className="relative z-10 flex flex-col items-center text-center mb-12">
-        <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground mb-4 max-w-2xl">
-          Build your next interface{" "}
-          <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-blue-600">
-            faster than ever
-          </span>
-        </h1>
-
-        <p className="text-muted-foreground text-xs md:text-sm max-w-lg leading-relaxed">
-          Describe your layout or select a template to generate production-ready
-          React components.
-        </p>
-      </div>
-
-      <div className="relative mx-auto w-full max-w-4xl animate-in fade-in zoom-in-95 duration-700">
-        <MessageForm projectId={projectId} />
-      </div>
-    </section>
-  );
-}
-
-function MessageForm({projectId}: {projectId?: string}) {
+function MessageForm({projectId}: {projectId: string}) {
   const [isFocused, setIsFocused] = React.useState(false);
 
   const { mutateAsync, isPending } = useCreateMessages(projectId);
@@ -93,7 +61,7 @@ function MessageForm({projectId}: {projectId?: string}) {
                     field.onBlur();
                   }}
                   minRows={1}
-                  className="resize-none border-none w-full outline-none bg-transparent text-base placeholder:text-muted-foreground/20 leading-relaxed px-2 scrollbar-hide"
+                  className={cn("resize-none border-none w-full outline-none bg-transparent text-base placeholder:text-muted-foreground/20 leading-relaxed px-2 scrollbar-hide",isPending && "opacity-50 cursor-not-allowed")}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
                       e.preventDefault();
@@ -115,12 +83,12 @@ function MessageForm({projectId}: {projectId?: string}) {
               <Button
                 className={cn(
                   "size-8 rounded-full p-0 shrink-0 shadow-lg shadow-primary/10 transition-all",
-                  isButtonDisabled 
+                  isPending 
                     ? "bg-muted text-muted-foreground border border-border/50 cursor-not-allowed" 
                     : "bg-primary hover:bg-primary/90 text-primary-foreground active:scale-90"
                 )}
                 type="submit"
-                disabled={isButtonDisabled}
+                disabled={isPending}
               >
                 {isPending ? (
                   <Spinner className="size-4" />
@@ -134,3 +102,4 @@ function MessageForm({projectId}: {projectId?: string}) {
       
   );
 }
+export default MessageForm;

@@ -9,6 +9,7 @@ import { Spinner } from "./ui/spinner";
 import MessageCard from "./message-card";
 import { Fragment } from "@/schemas/messagesSchema";
 import MessageForm from "./message-form";
+import MessageLoader from "./message-loader";
 interface MessageContainerProps {
   projectId: string;
   activeFragment: Fragment | null;
@@ -80,25 +81,33 @@ const MessageContainer = ({
   return (
     <div className="flex flex-col flex-1 min-h-0">
       <div className="flex-1 min-h-0 overflow-y-auto">
-        {messages.map((message) => (
-          <MessageCard
-            key={message.id}
-            content={message.content}
-            role={message.role}
-            fragment={message.fragments}
-            createdAt={message.createdAt}
-            isActiveFragment={activeFragment?.id === message.fragments?.id}
-            onFragmentClick={() => setActiveFragment(message.fragments)}
-            type={message.type}
-          />
-        ))}
-        <div ref={bottomRef}>
-        </div>
+        {!messages || messages.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+             No Messages Yet. Start a conversation
+          </div>
+        ) : (
+          messages.map((message) => (
+            <MessageCard
+              key={message.id}
+              content={message.content}
+              role={message.role}
+              fragment={message.fragments}
+              createdAt={message.createdAt}
+              isActiveFragment={activeFragment?.id === message.fragments?.id}
+              onFragmentClick={() => setActiveFragment(message.fragments)}
+              type={message.type}
+            />
+          ))
+        )}
+        {isLastMessageUser && <MessageLoader/> }
+        <div ref={bottomRef} />
       </div>
-      <div className="p-2 pt-1">
-        <div className="absolute -top-6 left-0 right-0 h-6 bg-linear-to-b from-transparent to-background pointer-events-none">
-            <MessageForm projectId={projectId}/>
-        </div>
+      
+     
+      <div className="relative p-2 pt-1">
+        {/* Gradient is now a sibling, not a parent */}
+        <div className="absolute -top-6 left-0 right-0 h-6 bg-gradient-to-t from-background to-transparent pointer-events-none"></div>
+        <MessageForm projectId={projectId} />
       </div>
     </div>
   );
