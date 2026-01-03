@@ -30,6 +30,13 @@ const ProjectHeader = ({ projectId }: { projectId: string }) => {
   const { theme, setTheme } = useTheme();
   return (
     <header className="p-2 flex justify-between items-center border-b">
+      <Image
+              src={"/half_logo.svg"}
+              alt="Vibe"
+              width={34}
+              height={38}
+              className="shrink-0"
+            />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
@@ -39,13 +46,7 @@ const ProjectHeader = ({ projectId }: { projectId: string }) => {
               "focus-visible:ring-0 hover:bg-transparent hover:opacity-75 transition-opacity pl-2!"
             }
           >
-            <Image
-              src={"/half_logo.svg"}
-              alt="Vibe"
-              width={38}
-              height={38}
-              className="shrink-0"
-            />
+            
             <span className="text-sm font-medium">
               {isPending ? <Spinner /> : project?.name || "Untitled Project"}
             </span>
