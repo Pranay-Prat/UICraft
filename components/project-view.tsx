@@ -15,6 +15,7 @@ import MessageContainer from "./message-container";
 import { Fragment } from "@/schemas/messagesSchema";
 import { Code, CrownIcon, EyeIcon } from "lucide-react";
 import FragmentWeb from "./fragment-web";
+import FileExplorer from "./file-explorer";
 const ProjectView = ({ projectId }: { projectId: string }) => {
   const [activeFragment, setActiveFragment] = useState<Fragment | null>(null);
   const [tabState, setTabState] = useState("preview");
@@ -79,8 +80,16 @@ const ProjectView = ({ projectId }: { projectId: string }) => {
               }
 
             </TabsContent>
-            <TabsContent value="code">
-              
+            <TabsContent value="code" className={"flex-1 h-[calc(100%-4rem)] overflow-hidden"}>
+              {
+                activeFragment?.files ? (
+                  <FileExplorer files={activeFragment.files}/>
+                ):(
+                  <div className="flex items-center justify-center h-full text-muted-foreground">
+                    Select a fragment to view code
+                  </div>
+                )
+              }
             </TabsContent>
           </Tabs>
         </ResizablePanel>
