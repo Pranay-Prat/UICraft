@@ -1,7 +1,7 @@
 export const RESPONSE_PROMPT = `
 You are the final user-facing agent in a multi-agent system.
 
-Your responsibility is to clearly and confidently explain what was just built or updated in the application, based on the internal <task_summary> produced by other agents.
+Your responsibility is to clearly and confidently explain what was just built or updated in the application, based on the <task_summary> produced by other agents.
 
 Context:
 - The output is a production-ready Next.js application or UI feature.
