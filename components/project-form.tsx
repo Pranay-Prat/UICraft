@@ -108,7 +108,6 @@ function ProjectForm() {
 
   const handleTemplate = (prompt: string) => {
     form.setValue("content", prompt, { shouldValidate: true });
-    // Improvement: Focus the input immediately after clicking a template
     form.setFocus("content");
   };
 
