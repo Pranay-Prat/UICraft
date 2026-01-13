@@ -1,0 +1,34 @@
+"use server";
+import { auth } from "@clerk/nextjs/server";
+import { DURATION, FREE_POINTS, PRO_POINTS, getUsageStatus } from "@/lib/usage";
+export const status = async () => {
+  try {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Not authenticated");
+    const { has } = await auth();
+    const hasProAccess = has({ plan: "pro" });
+    const maxPoints = hasProAccess ? PRO_POINTS : FREE_POINTS;
+    const result = await getUsageStatus();
+    if (!result) {
+      return {
+        remainingPoints: maxPoints,
+        msBeforeNet: DURATION * 1000,
+        consumedPoints: 0,
+        isFirstRequest: true,
+        maxPoints,
+      };
+    }
+    const remainingPoints =
+      result.remainingPoints ?? maxPoints - (result?.consumedPoints || 0);
+    return {
+      remainingPoints,
+      msBeforeNet: result.msBeforeNext || DURATION * 1000,
+      consumerPoints: result.consumedPoints || 0,
+      isFirstRequest: false,
+      maxPoints,
+    };
+  } catch (error) {
+    console.error("Error in usage status action:", error);
+    throw error;
+  }
+};
