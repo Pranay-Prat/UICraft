@@ -1,6 +1,7 @@
 "use server";
 import { inngest } from "@/inngest/client";
 import { prisma } from "@/lib/db";
+import { consumeCredits } from "@/lib/usage";
 import { getCurrentUser } from "@/modules/auth/actions";
 import { MessageRole, MessageType } from "@prisma/client";
 import { generateSlug } from "random-word-slugs";
@@ -10,6 +11,20 @@ export const createProject = async (value: string) => {
   if (!user) {
     throw new Error("Unauthorized");
   }
+   try {
+   await consumeCredits();
+ } catch (error) {
+   if (error instanceof Error) {
+     const err = new Error("Some error occurred while consuming credits: " + error.message);
+     (err as any).code = "BAD_REQUEST"; 
+     throw err;
+   } else {
+ 
+     const err = new Error("You have exceeded your usage limits. Please upgrade your plan to continue using the service.");
+     (err as any).code = "Too Many Requests";
+     throw err;
+   }
+ }
   console.log("2. User authorized, creating DB record...");
   const newProject = await prisma.project.create({
     data: {

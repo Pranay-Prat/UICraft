@@ -12,13 +12,16 @@ import { Form, FormField } from "./ui/form";
 import { messageFormSchema,messageformSchema } from "@/schemas/messageFormSchema";
 import { useCreateMessages } from "@/modules/messages/hooks/messages";
 import { Spinner } from "./ui/spinner";
+import { useStatus } from "@/modules/usage/hooks/usage";
+import Usage from "./usage";
 
 
 function MessageForm({projectId}: {projectId: string}) {
   const [isFocused, setIsFocused] = React.useState(false);
 
   const { mutateAsync, isPending } = useCreateMessages(projectId);
-  
+  const {data:usage} = useStatus();
+  const showUsage = !!usage;
   const form = useForm<messageformSchema>({
     resolver: zodResolver(messageFormSchema),
     defaultValues: { content: "" },
@@ -39,6 +42,11 @@ function MessageForm({projectId}: {projectId: string}) {
 
   return (
         <Form {...form}>
+          {
+            usage && (
+              <Usage/>
+            )
+          }
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className={cn(

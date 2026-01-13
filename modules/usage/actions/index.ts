@@ -12,7 +12,7 @@ export const status = async () => {
     if (!result) {
       return {
         remainingPoints: maxPoints,
-        msBeforeNet: DURATION * 1000,
+        msBeforeNext: DURATION * 1000,
         consumedPoints: 0,
         isFirstRequest: true,
         maxPoints,
@@ -22,7 +22,7 @@ export const status = async () => {
       result.remainingPoints ?? maxPoints - (result?.consumedPoints || 0);
     return {
       remainingPoints,
-      msBeforeNet: result.msBeforeNext || DURATION * 1000,
+      msBeforeNext: result.msBeforeNext || DURATION * 1000,
       consumerPoints: result.consumedPoints || 0,
       isFirstRequest: false,
       maxPoints,
