@@ -1,4 +1,9 @@
-import { useQuery, useMutation, useQueryClient, type QueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  type QueryClient,
+} from "@tanstack/react-query";
 import { createMessages, getMessages } from "../actions";
 
 export const prefetchMessages = async (
@@ -19,8 +24,13 @@ export const useGetMessages = (projectId: string) => {
     staleTime: 10000,
     refetchInterval: (query) => {
       const data = query.state.data;
-      
-      return data?.length ? 2000 : false; 
+      // Poll if no data yet (waiting for initial load)
+      if (!data || data.length === 0) {
+        return 2000;
+      }
+      // Poll if last message is from user (waiting for assistant response)
+      const lastMessage = data[data.length - 1];
+      return lastMessage?.role === "USER" ? 2000 : false;
     },
   });
 };
