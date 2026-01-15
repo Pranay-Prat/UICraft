@@ -52,17 +52,23 @@ const FragmentWeb = ({ data }: FragmentWebProps) => {
           <Button
             size={"sm"}
             variant={"outline"}
-            asChild
             onClick={() => {
               if (!data.sandboxUrl) return;
               window.open(data.sandboxUrl, "_blank");
             }}
+            disabled={!data?.sandboxUrl}
           >
-            <ExternalLinkIcon />
+            <ExternalLinkIcon className="size-4" />
           </Button>
         </Hint>
       </div>
-      <iframe key={fragmentKey} className="h-full w-full" sandbox="allow-scripts allow-same-origin" loading="lazy" src={data.sandboxUrl}></iframe>
+      <iframe
+        key={fragmentKey}
+        className="h-full w-full"
+        sandbox="allow-scripts allow-same-origin"
+        loading="lazy"
+        src={data.sandboxUrl}
+      ></iframe>
     </div>
   );
 };

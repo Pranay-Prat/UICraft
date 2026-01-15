@@ -67,28 +67,27 @@ const PROJECT_TEMPLATES = [
 
 export default function HeroSection() {
   return (
-    <section className="relative w-full min-h-screen py-10 md:py-20 px-6 overflow-x-hidden bg-background">
+    <section className="relative w-full py-16 md:py-24 px-6 overflow-hidden bg-background">
       {/* Background Glow Effects */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-full opacity-20 pointer-events-none">
-        {/* Fixed: w-125 is not standard, used w-[500px] instead */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-125 h-125 bg-primary/20 rounded-full blur-[100px]" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-full opacity-20 pointer-events-none">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary/20 rounded-full blur-[120px]" />
       </div>
 
-      <div className="relative z-10 flex flex-col items-center text-center mb-12">
-        <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground mb-4 max-w-2xl">
+      <div className="relative z-10 flex flex-col items-center text-center mb-14">
+        <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground mb-5 max-w-3xl">
           Build your next interface{" "}
           <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-blue-600">
             faster than ever
           </span>
         </h1>
 
-        <p className="text-muted-foreground text-xs md:text-sm max-w-lg leading-relaxed">
+        <p className="text-muted-foreground text-sm md:text-base max-w-xl leading-relaxed">
           Describe your layout or select a template to generate production-ready
           React components.
         </p>
       </div>
 
-      <div className="relative mx-auto w-full max-w-4xl animate-in fade-in zoom-in-95 duration-700">
+      <div className="relative mx-auto w-full max-w-6xl animate-in fade-in zoom-in-95 duration-700">
         <ProjectForm />
       </div>
     </section>
@@ -99,7 +98,7 @@ function ProjectForm() {
   const [isFocused, setIsFocused] = React.useState(false);
   const router = useRouter();
   const { mutateAsync, isPending } = useCreateProject();
-  
+
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: { content: "" },
@@ -130,7 +129,7 @@ function ProjectForm() {
     <div className="flex flex-col w-full gap-8">
       {/* Template Grid */}
       <div className="w-full">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {PROJECT_TEMPLATES.map((template) => (
             <button
               key={template.title}
@@ -147,7 +146,7 @@ function ProjectForm() {
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-background/50 shadow-sm">
                 <span className="text-2xl">{template.emoji}</span>
               </div>
-              <p className="text-[10px] font-bold text-muted-foreground group-hover:text-foreground tracking-wide uppercase">
+              <p className="text-xs font-medium text-muted-foreground group-hover:text-foreground tracking-wide">
                 {template.title}
               </p>
             </button>
@@ -212,8 +211,8 @@ function ProjectForm() {
               <Button
                 className={cn(
                   "size-8 rounded-full p-0 shrink-0 shadow-lg shadow-primary/10 transition-all",
-                  isButtonDisabled 
-                    ? "bg-muted text-muted-foreground border border-border/50 cursor-not-allowed" 
+                  isButtonDisabled
+                    ? "bg-muted text-muted-foreground border border-border/50 cursor-not-allowed"
                     : "bg-primary hover:bg-primary/90 text-primary-foreground active:scale-90"
                 )}
                 type="submit"

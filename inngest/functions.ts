@@ -6,6 +6,7 @@ import {
   createNetwork,
   createState,
 } from "@inngest/agent-kit";
+
 import Sandbox from "@e2b/code-interpreter";
 import { z } from "zod";
 import { FRAGMENT_TITLE_PROMPT, PROMPT, RESPONSE_PROMPT } from "@/prompt";
@@ -21,31 +22,37 @@ const codeAgentFunction = inngest.createFunction(
       const sandbox = await Sandbox.create("uicraft-build");
       return sandbox.sandboxId;
     });
-    const previousMessages = await step.run("get-previous-messages",async()=>{
-      const formattedMessages = [];
-      const messages = await prisma.message.findMany({
-        where:{
-          projectId:event.data.projectId
-        },
-        orderBy:{
-          createdAt:'desc'
+    const previousMessages = await step.run(
+      "get-previous-messages",
+      async () => {
+        const formattedMessages = [];
+        const messages = await prisma.message.findMany({
+          where: {
+            projectId: event.data.projectId,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        });
+        for (const message of messages) {
+          formattedMessages.push({
+            type: "text",
+            role: message.role === "ASSISTANT" ? "assistant" : "user",
+            content: message.content,
+          });
         }
-      })
-      for(const message of messages){
-        formattedMessages.push({
-          type:"text",
-          role:message.role === "ASSISTANT" ? "assistant" : "user",
-          content:message.content
-        })
+        return formattedMessages;
       }
-      return formattedMessages
-    })
-    const state = createState({
-      summary: "",
-      files: {},
-    },{
-      messages: previousMessages
-    });
+    );
+    const state = createState(
+      {
+        summary: "",
+        files: {},
+      },
+      {
+        messages: previousMessages,
+      }
+    );
 
     const codeAgent = createAgent({
       name: "code-agent",

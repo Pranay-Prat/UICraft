@@ -18,6 +18,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "UICraft",
   description: "AI powered no-code platform to build apps and websites quickly and easily.",
+  icons: {
+    icon: "/half_logo.svg",
+  },
 };
 
 export default function RootLayout({

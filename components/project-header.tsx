@@ -30,13 +30,9 @@ const ProjectHeader = ({ projectId }: { projectId: string }) => {
   const { theme, setTheme } = useTheme();
   return (
     <header className="p-2 flex justify-between items-center border-b">
-      <Image
-              src={"/half_logo.svg"}
-              alt="Vibe"
-              width={34}
-              height={38}
-              className="shrink-0"
-            />
+      <Link href="/" className="shrink-0 hover:opacity-80 transition-opacity">
+        <Image src={"/half_logo.svg"} alt="UICraft" width={34} height={38} />
+      </Link>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
@@ -46,7 +42,6 @@ const ProjectHeader = ({ projectId }: { projectId: string }) => {
               "focus-visible:ring-0 hover:bg-transparent hover:opacity-75 transition-opacity pl-2!"
             }
           >
-            
             <span className="text-sm font-medium">
               {isPending ? <Spinner /> : project?.name || "Untitled Project"}
             </span>

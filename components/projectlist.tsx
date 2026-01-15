@@ -1,6 +1,7 @@
 "use client";
-import React from "react";
+import React, { useCallback } from "react";
 import { useGetProjects } from "@/modules/project/hooks/project";
+import { prefetchMessages } from "@/modules/messages/hooks/messages";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "./ui/skeleton";
 import {
@@ -12,9 +13,12 @@ import {
 } from "./ui/carousel";
 import { FolderKanban, Calendar, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { useQueryClient } from "@tanstack/react-query";
 
 const ProjectList = () => {
   const { data: projects, isPending } = useGetProjects();
+  const queryClient = useQueryClient();
+
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString("en-US", {
       year: "numeric",
@@ -22,6 +26,15 @@ const ProjectList = () => {
       day: "numeric",
     });
   };
+
+  // Prefetch messages on hover for faster navigation
+  const handlePrefetch = useCallback(
+    (projectId: string) => {
+      prefetchMessages(queryClient, projectId);
+    },
+    [queryClient]
+  );
+
   if (isPending) {
     return (
       <div className="w-full mt-16">
@@ -36,6 +49,7 @@ const ProjectList = () => {
       </div>
     );
   }
+
   if (projects?.length === 0 || !projects) {
     return null;
   }
@@ -47,11 +61,14 @@ const ProjectList = () => {
       </h2>
       <div className="hidden lg:grid grid-cols-3 gap-4 max-w-6xl mx-auto">
         {projects.map((project) => (
-          <Link href={`/projects/${project.id}`} key={project.id}>
-            <Card
-              key={project.id}
-              className="group hover:shadow-xl transition-all duration-300 border-zinc-800/50 hover:border-emerald-500/50 cursor-pointer bg-zinc-900/30 backdrop-blur-sm overflow-hidden"
-            >
+          <Link
+            href={`/projects/${project.id}`}
+            key={project.id}
+            prefetch={true}
+            onMouseEnter={() => handlePrefetch(project.id)}
+            onFocus={() => handlePrefetch(project.id)}
+          >
+            <Card className="group hover:shadow-xl transition-all duration-300 border-zinc-800/50 hover:border-emerald-500/50 cursor-pointer bg-zinc-900/30 backdrop-blur-sm overflow-hidden">
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between mb-3">
                   <div className="p-2.5 bg-emerald-500/10 rounded-lg group-hover:bg-emerald-500/20 transition-colors">
@@ -84,8 +101,13 @@ const ProjectList = () => {
         >
           <CarouselContent className="-ml-4">
             {projects.map((project) => (
-              <Link href={`/projects/${project.id}`} key={project.id}>
-                <CarouselItem key={project.id} className="pl-4 md:basis-1/2">
+              <CarouselItem key={project.id} className="pl-4 md:basis-1/2">
+                <Link
+                  href={`/projects/${project.id}`}
+                  prefetch={true}
+                  onMouseEnter={() => handlePrefetch(project.id)}
+                  onFocus={() => handlePrefetch(project.id)}
+                >
                   <Card className="group hover:shadow-xl transition-all duration-300 border-zinc-800/50 hover:border-emerald-500/50 cursor-pointer bg-zinc-900/30 backdrop-blur-sm">
                     <CardHeader className="pb-3">
                       <div className="flex items-start justify-between mb-3">
@@ -105,8 +127,8 @@ const ProjectList = () => {
                       </div>
                     </CardContent>
                   </Card>
-                </CarouselItem>
-              </Link>
+                </Link>
+              </CarouselItem>
             ))}
           </CarouselContent>
           <CarouselPrevious className="border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-100" />

@@ -3,15 +3,10 @@ import ProjectList from "@/components/projectlist";
 
 export default function Home() {
   return (
-    <div className="flex items-center justify-center w-full px-4 py-8">
-
-      <div className="max-w-5xl w-full">
-        <section className="flex flex-col items-center">
-          <div className="max-w-3xl w-full">
-            <HeroSection />
-          </div>
-          <ProjectList/>
-        </section>
+    <div className="w-full min-h-screen">
+      <HeroSection />
+      <div className="max-w-7xl mx-auto px-6 pb-16">
+        <ProjectList />
       </div>
     </div>
   );
