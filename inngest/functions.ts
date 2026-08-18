@@ -1,10 +1,11 @@
 import { inngest } from "./client";
 import {
-  gemini,
+  openai,
   createAgent,
   createTool,
   createNetwork,
   createState,
+  type Message,
 } from "@inngest/agent-kit";
 
 import Sandbox from "@e2b/code-interpreter";
@@ -15,8 +16,7 @@ import { prisma } from "@/lib/db";
 import { MessageRole, MessageType } from "@prisma/client";
 
 const codeAgentFunction = inngest.createFunction(
-  { id: "code-agent", retries: 1 },
-  { event: "code-agent/run" },
+  { id: "code-agent", retries: 1, triggers: [{ event: "code-agent/run" }] },
   async ({ event, step }) => {
     const sandboxId = await step.run("get-sandbox-id", async () => {
       const sandbox = await Sandbox.create("uicraft-build");
@@ -50,7 +50,7 @@ const codeAgentFunction = inngest.createFunction(
         files: {},
       },
       {
-        messages: previousMessages,
+        messages: previousMessages as Message[],
       }
     );
 
@@ -58,7 +58,11 @@ const codeAgentFunction = inngest.createFunction(
       name: "code-agent",
       description: "An expert coding agent",
       system: PROMPT,
-      model: gemini({ model: "gemini-2.5-flash" }),
+      model: openai({
+        model: "nvidia/nemotron-3-ultra-550b-a55b:free",
+        baseUrl: "https://openrouter.ai/api/v1",
+        apiKey: process.env.OPENROUTER_API_KEY,
+      }),
       tools: [
         createTool({
           name: "terminal",
@@ -178,13 +182,21 @@ const codeAgentFunction = inngest.createFunction(
       name: "fragment-title-generator",
       description: "Generate  title for the fragment",
       system: FRAGMENT_TITLE_PROMPT,
-      model: gemini({ model: "gemini-2.5-flash" }),
+      model: openai({
+        model: "nvidia/llama-3.1-nemotron-ultra-253b-v1",
+        baseUrl: "https://openrouter.ai/api/v1",
+        apiKey: process.env.OPENROUTER_API_KEY,
+      }),
     });
     const responseGenerator = createAgent({
       name: "response-generator",
       description: "Generate a response for the fragment",
       system: RESPONSE_PROMPT,
-      model: gemini({ model: "gemini-2.5-flash" }),
+      model: openai({
+        model: "nvidia/llama-3.1-nemotron-ultra-253b-v1",
+        baseUrl: "https://openrouter.ai/api/v1",
+        apiKey: process.env.OPENROUTER_API_KEY,
+      }),
     });
 
     const { output: fragmentTitleOutput } = await fragmentTitleGenerator.run(
